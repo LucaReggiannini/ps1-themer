@@ -1,0 +1,170 @@
+#!/bin/bash
+
+# Color definitions
+DEFAULT="39"
+BLACK="30"
+RED="31"
+GREEN="32"
+YELLOW="33"
+BLUE="34"
+MAGENTA="35"
+CYAN="36"
+LIGHT_GRAY="37"
+DARK_GRAY="90"
+LIGHT_RED="91"
+LIGHT_GREEN="92"
+LIGHT_YELLOW="93"
+LIGHT_BLUE="94"
+LIGHT_MAGENTA="95"
+LIGHT_CYAN="96"
+WHITE="97"
+
+# Elements definitions
+_USER=" \u"
+_MACHINE="@\h "
+_PATH=" \w "
+_ARROW=""
+
+# Configuration files location
+CONFIG_FILE_USER="$HOME/.config/ps1-luku-theme.config"
+CONFIG_FILE_SYSTEM="/etc/ps1-luku-theme.config"
+
+# Load default configuration
+light_foregroundColorMachine=$WHITE
+light_backgroundColorMachine=$BLACK
+light_foregroundColorPath=$WHITE
+light_backgroundColorPath=$DARK_GRAY
+light_foregroundColorGit=$BLACK
+light_backgroundColorGit=$GREEN
+light_foregroundColorGitUncommitted=$BLACK
+light_backgroundColorGitUncommitted=$YELLOW
+light_foregroundColorRoot=$RED
+
+dark_foregroundColorMachine=$BLACK
+dark_backgroundColorMachine=$WHITE
+dark_foregroundColorPath=$BLACK
+dark_backgroundColorPath=$LIGHT_GRAY
+dark_foregroundColorGit=$BLACK
+dark_backgroundColorGit=$GREEN
+dark_foregroundColorGitUncommitted=$BLACK
+dark_backgroundColorGitUncommitted=$YELLOW
+dark_foregroundColorRoot=$RED
+
+pathLength="0"
+userTheme="dark"
+
+error () {
+	>&2 echo "$(basename $0) error: $1" 
+}
+
+getTerminalEmulatorName () {
+	basename "/"$(ps -o cmd -f -p $(cat /proc/$(echo $$)/stat | cut -d \  -f 4) | tail -1 | sed 's/ .*$//') 2>/dev/null
+}
+
+# Get current Git Branch name
+# If current path is not a Git Branch the output will be NULL
+getGitBranchName() {
+	git branch 2> /dev/null | grep -Po "(?<=^\* ).*"
+}
+# Colorize a string using color definition declared in this script.
+#
+# Color values defined in this script are actually the same used by
+# PS1 to represent foreground colors.
+#
+# To represent a background color PS1 uses the same foreground color
+# values plus '10' (for example: if foreground Magenta = '35', then
+# background Magenta will be '45').
+#
+# Function 'setColor' uses 'ps1-colorize' to colorize a string; the
+# latter uses PS1 color values so 'setColor' need to pass the color
+# value declared in this script plus '10' in order to transform it
+# in a understandable value for a PS1 background color.
+setColor() {
+	ps1-colorize-16 "$1" "$(($2+10))" "$3"
+}
+
+# Load custom configuration file.
+# First try from local user, then from system-wide folder.
+if [[ -f "$CONFIG_FILE_USER" ]]; then
+	. "$CONFIG_FILE_USER"
+else
+	if [[ -f "$CONFIG_FILE_SYSTEM" ]]; then
+		. "$CONFIG_FILE_SYSTEM"
+	fi
+fi
+
+# Shorten the paths taking into account the value of $ pathLength.
+# If the value is "0" it shows the complete path.
+# If the value is greater than "0" it writes a maximum of $pathLength
+# letters in the path; the last folder it is always shown completely
+#
+# Check if $pathLength is a valid number
+case $pathLength in
+	''|*[!0-9]*)
+	error "invalid pathLength value (setting value to 0)"
+	pathLength=0
+	;;
+	*)
+	if [ "$pathLength" -gt 0 ]; then
+		if [ "${PWD}" == "${HOME}" ]; then
+			# If current directory is equal 
+			# to home folder print only a "tilde"
+			_PATH=" ~ "
+		else
+			_PATH=$(p="${PWD#${HOME}}"; [ "${PWD}" != "${p}" ] && printf "~";IFS=/; for q in ${p:1}; do printf "%s" /${q:0:$pathLength}; done; printf "%s" "${q:$pathLength}")
+			_PATH=" $_PATH "
+		fi
+	fi
+	;;
+esac
+
+COLOR_RESET=$(setColor "$DEFAULT" "$DEFAULT" " ")
+
+generateTheme() {
+	echo "${colorizedUser}${colorizedMachine}${colorizedArrow1}${colorizedPath}${colorizedArrow2}${COLOR_RESET}"
+	exit 0
+}
+generateTheme_WithGitBranch() {
+	echo "${colorizedUser}${colorizedMachine}${colorizedArrow1}${colorizedPath}${colorizedArrow2}${colorizedGitBranch}${colorizedArrow3}${COLOR_RESET}"
+	exit 0
+}
+
+if [[ -z $SUDO_USER ]]; then
+	userIsRoot=false
+else
+	userIsRoot=true
+fi
+
+if [[ $userTheme =~ "dark" ]]; then
+	colorizedUser=$(setColor $dark_foregroundColorMachine $dark_backgroundColorMachine "$_USER")
+	if [[ $userIsRoot == true ]]; then
+		colorizedUser=$(setColor $dark_foregroundColorRoot $dark_backgroundColorMachine "$_USER")
+	fi
+	colorizedMachine=$(setColor $dark_foregroundColorMachine $dark_backgroundColorMachine "$_MACHINE")
+	colorizedPath=$(setColor $dark_foregroundColorPath $dark_backgroundColorPath "$_PATH")
+	if ! [[ -z "$(getGitBranchName)" ]]; then
+		if [ -n "$(git status --porcelain)" ]; then
+			colorizedGitBranch=$(setColor $dark_foregroundColorGitUncommitted $dark_backgroundColorGitUncommitted " $(getGitBranchName) ")
+		else
+			colorizedGitBranch=$(setColor $dark_foregroundColorGit $dark_backgroundColorGit " $(getGitBranchName) ")
+		fi
+		generateTheme_WithGitBranch
+	fi
+	generateTheme
+else
+	colorizedUser=$(setColor $light_foregroundColorMachine $light_backgroundColorMachine "$_USER")
+	if [[ $userIsRoot == true ]]; then
+		colorizedUser=$(setColor $light_foregroundColorRoot $light_backgroundColorMachine "$_USER")
+	fi
+	colorizedMachine=$(setColor $light_foregroundColorMachine $light_backgroundColorMachine "$_MACHINE")
+	colorizedPath=$(setColor $light_foregroundColorPath $light_backgroundColorPath "$_PATH")
+	if ! [[ -z "$(getGitBranchName)" ]]; then
+		if [ -n "$(git status --porcelain)" ]; then
+			colorizedGitBranch=$(setColor $light_foregroundColorGitUncommitted $light_backgroundColorGitUncommitted " $(getGitBranchName) ")
+		else
+			colorizedGitBranch=$(setColor $light_foregroundColorGit $light_backgroundColorGit " $(getGitBranchName) ")
+		fi
+		generateTheme_WithGitBranch
+	fi
+	generateTheme
+fi

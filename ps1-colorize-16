@@ -1,0 +1,137 @@
+#!/bin/bash
+
+COLOR_FOREGROUND_CODES=(39 30 31 32 33 34 35 36 37 90 91 92 93 94 95 96 97)
+COLOR_BACKGROUND_CODES=(49 40 41 42 43 44 45 46 47 100 101 102 103 104 105 106 107)
+COLOR_NAMES=("Default" "Black" "Red" "Green" "Yellow" "Blue" "Magenta" "Cyan" "Light gray" "Dark gray" "Light red" "Light green" "Light yellow" "Light blue" "Light magenta" "Light cyan" "White")
+
+COLOR_PREFIX="\[\e["
+COLOR_SUFFIX="m\]"
+COLOR_END="\[\e[m\]"
+
+colorize () {
+	local colorForeground="$1"
+	local colorBackground="$2"
+	local text="$3"
+	echo -n "$COLOR_PREFIX$colorForeground;$colorBackground$COLOR_SUFFIX$text$COLOR_END"
+}
+
+help () {
+	echo """
+SYNOPSIS: 
+	ps1-colorize-16 [FOREGROUND COLOR] [BACKGROUND COLOR] [TEXT]
+
+DESCRIPTION:
+	Prints a line colorized  with PS1 syntax.
+
+	Syntax:
+		\[\e[FOREGROUND_CODE;BACKGROUND_CODEm\] here my colored line \[\e[m\]
+
+	Example:
+
+		Input:
+			ps1-colorize-16 39 49 " here my colored line "
+
+		Output:
+			\[\e[39;49m\] here my colored line \[\e[m\]
+		
+	
+	This script generates 16 colors only.
+	Use parameter '-h' or '--help' to show this manual.
+	
+	For more informations about PS1 colors: https://misc.flogisoft.com/bash/tip_colors_and_formatting
+
+COLORS:
+	"""
+	# Print a table with columns
+	#	'color name'
+	#	'color id'
+	#	'color example'
+
+	arrayLenght=${#COLOR_NAMES[@]}
+	# Repeat the code twice: 
+	# 'a=0' for foreground colors, 
+	# 'a=1' for background colors
+	for (( a=0; a<=1; a++ )); do
+
+		if [ $a == 0 ]; then
+			echo -e "\tForeground colors:\n"
+			currentCodes=("${COLOR_FOREGROUND_CODES[@]}")
+		else
+			echo -e "\n\tBackground colors:\n"
+			currentCodes=("${COLOR_BACKGROUND_CODES[@]}")
+		fi
+		
+		for (( arrayIndex=0; arrayIndex<arrayLenght; arrayIndex++ )); do
+			
+			# Print some spaces to align the columns to be printed
+			COLUMN_NAMES_SIZE=15
+			COLUMN_CODES_SIZE=5
+			columnNamesSpacesNumber=$(($COLUMN_NAMES_SIZE-${#COLOR_NAMES[$arrayIndex]}))
+			columnCodesSpacesNumber=$(($COLUMN_CODES_SIZE-${#currentCodes[$arrayIndex]}))
+
+			# Prints 'color name' column
+			echo -en "\t\t${COLOR_NAMES[$arrayIndex]}" 
+			for (( c=0; c<=columnNamesSpacesNumber; c++ )); do echo -n " "; done
+			
+			# Prints 'color id' column
+			echo -en "${currentCodes[$arrayIndex]}" 
+			for (( c=0; c<=columnCodesSpacesNumber; c++ )); do echo -n " "; done
+			
+			# Prints 'color example' column
+			# \e[39m\e[49m is used at the end of the line to reset next text colors to default 
+			echo -en "\e[${currentCodes[$arrayIndex]}m${COLOR_NAMES[$arrayIndex]}\e[39m\e[49m\n" 
+		done
+	done
+
+	exit 1
+	}
+
+error () {
+	>&2 echo "$(basename $0) error: $1" 
+}
+
+arrayContains () {
+
+	# Check if array contains specific element.
+	# 'result' is 0 if element is found.
+	#
+	# Usage:
+	# arr=(a b c "d e" f g)
+	# array_contains "a b" "${arr[@]}" && echo yes || echo no # no
+	# array_contains "d e" "${arr[@]}" && echo yes || echo no # yes
+	local elementToFind=$1; shift
+	local result=1
+	for element; do
+		if [ $element == "$elementToFind" ]; then
+			result=0
+			break
+		fi
+	done
+	echo "$result"
+
+}
+
+# Check if arguments are null
+if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]; then
+	error "invalid argument"
+	help
+fi
+
+# Check if argument is 'help'
+if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+	help
+fi
+
+# Check if foreground color has valid code
+if [ "$(arrayContains $1 ${COLOR_FOREGROUND_CODES[@]})" == "1" ]; then
+	error "invalid foreground color"
+	help
+fi
+
+# Check if background color has valid code
+if [ "$(arrayContains $2 ${COLOR_BACKGROUND_CODES[@]})" == "1" ]; then
+	error "invalid background color"
+	help
+fi
+
+colorize "$1" "$2" "$3"

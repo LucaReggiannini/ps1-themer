@@ -1,0 +1,16 @@
+#!/bin/bash
+GTK_THEME_DARK="adw-gtk3-dark"
+GTK_THEME_LIGHT="adw-gtk3"
+
+while :
+do
+	libadwaitaTheme=$(gsettings get org.gnome.desktop.interface color-scheme)
+	if [[ "$libadwaitaTheme" == *"prefer-dark"* ]]; then
+		gsettings set org.gnome.desktop.interface gtk-theme "$GTK_THEME_DARK"
+		libadwaita-theme-sync-writer 1
+	else
+		gsettings set org.gnome.desktop.interface gtk-theme "$GTK_THEME_LIGHT"
+		libadwaita-theme-sync-writer 0
+	fi
+	sleep 1
+done

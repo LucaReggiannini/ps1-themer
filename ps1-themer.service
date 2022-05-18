@@ -1,0 +1,8 @@
+[Unit]
+Description=ps1-themer service for libadwaita theme sync 
+
+[Service]
+ExecStart=/usr/local/bin/libadwaita-theme-sync
+
+[Install]
+WantedBy=default.target

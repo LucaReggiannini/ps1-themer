@@ -89,7 +89,7 @@ There are currently two themes available:
 - custom background colors for the Git Branch name if there are changes to be committed
 - custom folder length for the current working directory *(used to prevent full long paths to be displayed)*
 - squared theme variant for terminal which do not support Unicode symbols
-- 
+
 An example of theme customization:
 ![screenshot_customization.png](./screenshots/screenshot_customization.png)
 Light variant:

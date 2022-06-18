@@ -107,6 +107,7 @@ chmod u+s '$INSTALLATION_FOLDER'/libadwaita-theme-sync-writer;
 		else
 			sh -c "$COMMANDS"
 		fi
+		mkdir -p ~/.config/systemd/user
 		cp ./ps1-themer.service ~/.config/systemd/user;
 		systemctl --user enable ps1-themer;
 		echo 'Synchronization Service installation completed.'

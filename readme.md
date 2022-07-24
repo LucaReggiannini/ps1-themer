@@ -81,6 +81,7 @@ The script is invoked by the PS1 Themer package themes to customize your termina
 There are currently two themes available:
 - **ps1-luku-theme** (main theme)
 - **ps1-luku-squared-theme** (main theme variant, no Unicode symbols used)
+- **ps1-luku-simple-theme** (main theme variant without special/stylish separators)
 
 ## Luku themes features
 - light and dark variants
@@ -98,7 +99,8 @@ Dark variant:
 ![screenshot_dark.png](./screenshots/screenshot_dark.png)
 Cygwin Bash on Windows 11 (square variant):
 ![screenshot_win.png](./screenshots/screenshot_win.png)
-
+Ubuntu-like colors (simple variant):
+![screenshot_ubuntulike.png](./screenshots/screenshot_simple_ubuntu.png)
 
 # How to install
 You have two options:

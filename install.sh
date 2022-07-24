@@ -16,6 +16,7 @@ The following files will be written in "'$INSTALLATION_FOLDER'".
 ps1-colorize-16
 ps1-luku-theme
 ps1-luku-square-theme
+ps1-luku-simple-theme
 libadwaita-theme-sync
 
 The previous files will be marked for execution.
@@ -29,11 +30,12 @@ case "$response" in
 mv /etc/bash.bashrc /etc/bash.bashrc.bak;
 cp ./bash.bashrc /etc/bash.bashrc;
 
-chmod +x ./ps1-colorize-16 ./ps1-luku-theme ./ps1-luku-square-theme;
+chmod +x ./ps1-colorize-16 ./ps1-luku-theme ./ps1-luku-square-theme ./ps1-luku-simple-theme;
 
 cp ./ps1-colorize-16 $INSTALLATION_FOLDER;
 cp ./ps1-luku-theme $INSTALLATION_FOLDER;
 cp ./ps1-luku-square-theme $INSTALLATION_FOLDER;
+cp ./ps1-luku-simple-theme $INSTALLATION_FOLDER;
 "
 		if command -v sudo &> /dev/null; then # Check if 'sudo' exists (Usefull on system without 'sudo' like Cygwin)
 			sudo sh -c "$COMMANDS"

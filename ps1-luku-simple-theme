@@ -30,24 +30,24 @@ CONFIG_FILE_USER="$HOME/.config/ps1-luku-theme.config"
 CONFIG_FILE_SYSTEM="/etc/ps1-luku-theme.config"
 
 # Load default configuration
-light_foregroundColorMachine=$WHITE
-light_backgroundColorMachine=$BLACK
-light_foregroundColorPath=$WHITE
-light_backgroundColorPath=$DARK_GRAY
-light_foregroundColorGit=$BLACK
-light_backgroundColorGit=$GREEN
-light_foregroundColorGitUncommitted=$BLACK
-light_backgroundColorGitUncommitted=$YELLOW
+light_foregroundColorMachine=$LIGHT_GREEN
+light_backgroundColorMachine=$DEFAULT
+light_foregroundColorPath=$LIGHT_CYAN
+light_backgroundColorPath=$DEFAULT
+light_foregroundColorGit=$GREEN
+light_backgroundColorGit=$DEFAULT
+light_foregroundColorGitUncommitted=$YELLOW
+light_backgroundColorGitUncommitted=$DEFAULT
 light_foregroundColorRoot=$RED
 
-dark_foregroundColorMachine=$BLACK
-dark_backgroundColorMachine=$WHITE
-dark_foregroundColorPath=$BLACK
-dark_backgroundColorPath=$LIGHT_GRAY
-dark_foregroundColorGit=$BLACK
-dark_backgroundColorGit=$GREEN
-dark_foregroundColorGitUncommitted=$BLACK
-dark_backgroundColorGitUncommitted=$YELLOW
+dark_foregroundColorMachine=$LIGHT_GREEN
+dark_backgroundColorMachine=$DEFAULT
+dark_foregroundColorPath=$LIGHT_CYAN
+dark_backgroundColorPath=$DEFAULT
+dark_foregroundColorGit=$GREEN
+dark_backgroundColorGit=$DEFAULT
+dark_foregroundColorGitUncommitted=$YELLOW
+dark_backgroundColorGitUncommitted=$DEFAULT
 dark_foregroundColorRoot=$RED
 
 pathLength="0"
@@ -80,7 +80,7 @@ getGitBranchName() {
 # value declared in this script plus '10' in order to transform it
 # in a understandable value for a PS1 background color.
 setColor() {
-	ps1-colorize-16 "$1" "$(($2+10))" "$3"
+	ps1-colorize-16 "$1" "$(($2+10))" "bold" "$3"
 }
 
 # Load custom configuration file.
@@ -121,11 +121,11 @@ esac
 COLOR_RESET=$(setColor "$DEFAULT" "$DEFAULT" "$")
 
 generateTheme() {
-	echo "$(tput bold)${colorizedUser}$(tput bold)${colorizedMachine}:$(tput bold)${colorizedPath}${COLOR_RESET} "
+	echo "${colorizedUser}${colorizedMachine}:${colorizedPath}${COLOR_RESET} "
 	exit 0
 }
 generateTheme_WithGitBranch() {
-	echo "$(tput bold)${colorizedUser}$(tput bold)${colorizedMachine}:$(tput bold)${colorizedPath}:$(tput bold)${colorizedGitBranch}${COLOR_RESET} "
+	echo "${colorizedUser}${colorizedMachine}:${colorizedPath}:${colorizedGitBranch}${COLOR_RESET} "
 	exit 0
 }
 

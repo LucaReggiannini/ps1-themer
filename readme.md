@@ -8,7 +8,7 @@ A set of tools to easily customize Bash.
 ps1-colorize-16
 
 SYNOPSIS: 
-	ps1-colorize-16 [FOREGROUND COLOR] [BACKGROUND COLOR] [TEXT]
+	ps1-colorize-16 [FOREGROUND COLOR] [BACKGROUND COLOR] [TYPE] [TEXT]
 
 DESCRIPTION:
 	Prints a line colorized  with PS1 syntax.
@@ -16,19 +16,27 @@ DESCRIPTION:
 	Syntax:
 		\[\e[FOREGROUND_CODE;BACKGROUND_CODEm\] here my colored line \[\e[m\]
 
+	code "\[\e[1m\]" is added as prefix if bold type is set
+
 	Example:
 
 		Input:
-			ps1-colorize-16 39 49 " here my colored line "
+			ps1-colorize-16 39 49 normal " here my colored line "
+			ps1-colorize-16 39 49 bold " here my colored bold line "
 
 		Output:
 			\[\e[39;49m\] here my colored line \[\e[m\]
+			\[\e[1m\]\[\e[39;49m\] here my colored bold line \[\e[m\]
 		
 	
 	This script generates 16 colors only.
 	Use parameter '-h' or '--help' to show this manual.
 	
 	For more informations about PS1 colors: https://misc.flogisoft.com/bash/tip_colors_and_formatting
+
+TYPE:
+	normal
+	bold
 
 COLORS:
 	
@@ -81,7 +89,7 @@ The script is invoked by the PS1 Themer package themes to customize your termina
 There are currently two themes available:
 - **ps1-luku-theme** (main theme)
 - **ps1-luku-squared-theme** (main theme variant, no Unicode symbols used)
-- **ps1-luku-simple-theme** (main theme variant without special/stylish separators)
+- **ps1-luku-simple-theme** (main theme variant without special/stylish separators and Ubuntu-like colors)
 
 ## Luku themes features
 - light and dark variants

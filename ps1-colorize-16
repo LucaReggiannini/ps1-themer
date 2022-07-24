@@ -7,18 +7,28 @@ COLOR_NAMES=("Default" "Black" "Red" "Green" "Yellow" "Blue" "Magenta" "Cyan" "L
 COLOR_PREFIX="\[\e["
 COLOR_SUFFIX="m\]"
 COLOR_END="\[\e[m\]"
+BOLD="\[\e[1m\]"
 
 colorize () {
 	local colorForeground="$1"
 	local colorBackground="$2"
-	local text="$3"
-	echo -n "$COLOR_PREFIX$colorForeground;$colorBackground$COLOR_SUFFIX$text$COLOR_END"
+	local type="$3"
+	local text="$4"
+	# Check if type is valid
+	if [ "$type" == "normal" ]; then
+		echo -n "$COLOR_PREFIX$colorForeground;$colorBackground$COLOR_SUFFIX$text$COLOR_END"
+	elif [ "$type" == "bold" ]; then
+		echo -n "$BOLD$COLOR_PREFIX$colorForeground;$colorBackground$COLOR_SUFFIX$text$COLOR_END"
+	else
+		echo "invalid type during colorization"
+	fi
+	
 }
 
 help () {
 	echo """
 SYNOPSIS: 
-	ps1-colorize-16 [FOREGROUND COLOR] [BACKGROUND COLOR] [TEXT]
+	ps1-colorize-16 [FOREGROUND COLOR] [BACKGROUND COLOR] [TYPE] [TEXT]
 
 DESCRIPTION:
 	Prints a line colorized  with PS1 syntax.
@@ -26,19 +36,27 @@ DESCRIPTION:
 	Syntax:
 		\[\e[FOREGROUND_CODE;BACKGROUND_CODEm\] here my colored line \[\e[m\]
 
+	code "\[\e[1m\]" is added as prefix if bold type is set
+
 	Example:
 
 		Input:
-			ps1-colorize-16 39 49 " here my colored line "
+			ps1-colorize-16 39 49 normal " here my colored line "
+			ps1-colorize-16 39 49 bold " here my colored bold line "
 
 		Output:
 			\[\e[39;49m\] here my colored line \[\e[m\]
+			\[\e[1m\]\[\e[39;49m\] here my colored bold line \[\e[m\]
 		
 	
 	This script generates 16 colors only.
 	Use parameter '-h' or '--help' to show this manual.
 	
 	For more informations about PS1 colors: https://misc.flogisoft.com/bash/tip_colors_and_formatting
+
+TYPE:
+	normal
+	bold
 
 COLORS:
 	"""
@@ -111,14 +129,23 @@ arrayContains () {
 
 }
 
+# Check if argument is 'help'
+if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+	help
+fi
+
+
 # Check if arguments are null
-if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]; then
+if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ -z "$4" ]; then
 	error "invalid argument"
 	help
 fi
 
-# Check if argument is 'help'
-if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+# Check if type is valid
+if [ "$3" == "normal" ] || [ "$3" == "bold" ]; then
+	:
+else
+	error "invalid type "$3"; possible values: normal, bold"
 	help
 fi
 
@@ -134,4 +161,4 @@ if [ "$(arrayContains $2 ${COLOR_BACKGROUND_CODES[@]})" == "1" ]; then
 	help
 fi
 
-colorize "$1" "$2" "$3"
+colorize "$1" "$2" "$3" "$4"

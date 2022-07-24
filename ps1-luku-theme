@@ -80,7 +80,7 @@ getGitBranchName() {
 # value declared in this script plus '10' in order to transform it
 # in a understandable value for a PS1 background color.
 setColor() {
-	ps1-colorize-16 "$1" "$(($2+10))" "$3"
+	ps1-colorize-16 "$1" "$(($2+10))" "normal" "$3"
 }
 
 # Load custom configuration file.

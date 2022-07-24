@@ -118,14 +118,14 @@ case $pathLength in
 	;;
 esac
 
-COLOR_RESET=$(setColor "$DEFAULT" "$DEFAULT" " ")
+COLOR_RESET=$(setColor "$DEFAULT" "$DEFAULT" "$")
 
 generateTheme() {
-	echo "${colorizedUser}${colorizedMachine}:${colorizedPath}${COLOR_RESET}$ "
+	echo "${colorizedUser}${colorizedMachine}:${colorizedPath}${COLOR_RESET} "
 	exit 0
 }
 generateTheme_WithGitBranch() {
-	echo "${colorizedUser}${colorizedMachine}:${colorizedPath}:${colorizedGitBranch}${COLOR_RESET}$ "
+	echo "${colorizedUser}${colorizedMachine}:${colorizedPath}:${colorizedGitBranch}${COLOR_RESET} "
 	exit 0
 }
 
